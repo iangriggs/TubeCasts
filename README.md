@@ -1,4 +1,4 @@
-# Tubecasts
+# TubeCasts
 
 This repository contains the source files for Tubecasts. Tubecasts is an entry into the 2021/22 Morialis/Avalanche Hackathon.
 
@@ -9,7 +9,7 @@ The solution makes ample use of the following technologies:
 - Chainlink
 - Filecoin/Web3.Storage/IPFS
 
-and ofcourse:
+and of course:
 
 - Moralis
 - Avalanche
