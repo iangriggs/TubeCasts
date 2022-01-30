@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  chainlink:
+    ports:
+      - 6688:6688
+    volumes:
+      - ./chainlink-fuji:/chainlink
+    env_file:
+      - ./chainlink-fuji/.env
+    image: "smartcontract/chainlink:1.0.1"
+    command: local n -p /chainlink/.password -a /chainlink/.api
+    depends_on:
+      - postgres
+  postgres:
+    env_file:
+      - ./postgres/.env
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    image: "postgres"
+  external-adapter:
+    image: "iangriggs/node-ffmpeg-external-adapter"
+    depends_on:
+      - chainlink
+volumes:
+  db-data:

@@ -1,0 +1,11 @@
+.env
+.git
+*Dockerfile*
+*docker-compose*
+node_modules
+
+.dockerignore
+.gitignore
+*.sh
+chainlink
+*.lock

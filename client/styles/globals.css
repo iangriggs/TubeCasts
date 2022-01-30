@@ -1,0 +1,44 @@
+@tailwind base;
+
+input[type="range"] {
+  -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+  width: 100%; /* Specific width is required for Firefox. */
+  background: transparent; /* Otherwise white in Chrome */
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+input[type="range"]:focus {
+  outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+}
+
+input[type="range"] {
+  /* overflow: hidden; */
+  -webkit-appearance: none;
+  margin: 0 0;
+  width: 100%;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8px;
+  cursor: pointer;
+  border-radius: 5px;
+  background: #b7e800;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: 1px solid #ffffff;
+  height: 20px;
+  width: 14px;
+  border-radius: 5px;
+  background: #434343;
+  cursor: pointer;
+  margin-top: -6px;
+}
+
+@tailwind components;
+@tailwind utilities;

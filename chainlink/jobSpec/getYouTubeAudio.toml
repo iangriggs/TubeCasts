@@ -1,0 +1,48 @@
+type = "directrequest"
+schemaVersion = 1
+name = "Get > YouTubeAudio"
+contractAddress = "0xE52F4aedAb0581df41fB5aBA4d46dda213C962f3"
+maxTaskDuration = "0s"
+observationSource = """
+decode_log [type="ethabidecodelog"
+abi="OracleRequest(bytes32 indexed specId, address requester, bytes32 requestId, uint256 payment, address callbackAddr, bytes4 callbackFunctionId, uint256 cancelExpiration, uint256 dataVersion, bytes data)"
+data="$(jobRun.logData)"
+topics="$(jobRun.logTopics)"]
+
+decode_cbor  [type="cborparse" data="$(decode_log.data)"]
+fetch        [type="bridge" name="youtube-audio" requestData="{\\"id\\":$(jobSpec.externalJobID),\\"data\\":{\\"youtube_url\\":$(decode_cbor.youtube_url),\\"request_id\\":$(decode_log.requestId)}}"]
+
+decode_log -> decode_cbor -> fetch
+
+parse_title   [type="jsonparse" path="title" data="$(fetch)"]
+parse_cid   [type="jsonparse" path="cid" data="$(fetch)"]
+parse_thumbnail   [type="jsonparse" path="thumbnail" data="$(fetch)"]
+parse_uploadDate   [type="jsonparse" path="upload_date" data="$(fetch)"]
+parse_duration   [type="jsonparse" path="duration" data="$(fetch)"]
+parse_youtubeUrl   [type="jsonparse" path="youtube_url" data="$(fetch)"]
+
+fetch -> parse_title
+fetch -> parse_cid
+fetch -> parse_thumbnail
+fetch -> parse_uploadDate
+fetch -> parse_duration
+fetch -> parse_youtubeUrl 
+
+parse_title -> encode_data
+parse_cid -> encode_data
+parse_thumbnail -> encode_data
+parse_uploadDate -> encode_data
+parse_duration -> encode_data
+parse_youtubeUrl -> encode_data 
+
+encode_data  [type="ethabiencode" abi="(bytes32 requestId, bytes title, bytes cid, bytes thumbnail, bytes uploadDate, uint256 duration, bytes youtubeUrl)" 
+    data="{ \\"requestId\\": $(decode_log.requestId), \\"title\\": $(parse_title), \\"cid\\": $(parse_cid), \\"thumbnail\\": $(parse_thumbnail), \\"uploadDate\\": $(parse_uploadDate), \\"duration\\": $(parse_duration), \\"youtubeUrl\\": $(parse_youtubeUrl) }"]
+encode_tx    [type="ethabiencode"
+              abi="fulfillOracleRequest2(bytes32 requestId, uint256 payment, address callbackAddress, bytes4 callbackFunctionId, uint256 expiration, bytes calldata data)"
+              data="{\\"requestId\\": $(decode_log.requestId), \\"payment\\": $(decode_log.payment), \\"callbackAddress\\": $(decode_log.callbackAddr), \\"callbackFunctionId\\": $(decode_log.callbackFunctionId), \\"expiration\\": $(decode_log.cancelExpiration), \\"data\\": $(encode_data)}"
+             ]
+submit_tx    [type="ethtx" to="0xE52F4aedAb0581df41fB5aBA4d46dda213C962f3" data="$(encode_tx)"]
+
+encode_data -> encode_tx -> submit_tx
+
+"""
